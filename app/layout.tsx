@@ -1,8 +1,9 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import Link from "next/link";
-import Image from "next/image";
-import NavBar from "@/components/NavBar";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import MainFrame from "@/components/MainFrame";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata: Metadata = {
   title: "AIC Quest – Growth via Gamification",
@@ -30,21 +31,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <header className="border-b border-slate-200 bg-white">
-          <div className="container flex items-center justify-between py-3">
-            <Link href="/" className="flex items-center gap-2 font-semibold">
-              <Image src="/favicon.svg" alt="AIC" width={24} height={24} />
-              <span>AIC Quest</span>
-            </Link>
-            <NavBar />
-          </div>
-        </header>
-        <main className="py-6">
-          <div className="container">{children}</div>
-        </main>
-        <footer className="container py-8 text-center text-sm text-slate-500">
-          Built for F1 Hackathon • Deployed on Vercel
-        </footer>
+        <Header />
+        <MainFrame>{children}</MainFrame>
+        <Footer />
+        <SpeedInsights />
       </body>
     </html>
   );

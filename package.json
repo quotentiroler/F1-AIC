@@ -10,10 +10,11 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@vercel/kv": "^2.0.0",
+    "@vercel/speed-insights": "^1.2.0",
     "next": "15.5.4",
     "react": "19.1.1",
-    "react-dom": "19.1.1",
-    "@vercel/kv": "^2.0.0"
+    "react-dom": "19.1.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "4.1.13",
