@@ -37,6 +37,17 @@ export default function QuestCard({
           <div>
             <h3 className="text-base font-semibold tracking-tight">{quest.title}</h3>
             <p className="mt-1 text-sm text-slate-600">{quest.description}</p>
+            {quest.kind && (
+              <div className="mt-1 inline-flex items-center gap-1 text-[11px] text-slate-500">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+                  <circle cx="12" cy="12" r="9" />
+                </svg>
+                {quest.kind === "main" && "Main quest"}
+                {quest.kind === "side" && "Side quest"}
+                {quest.kind === "event" && "Event quest"}
+                {quest.kind === "event-side" && "Event side quest"}
+              </div>
+            )}
             {quest.deadline && (
               <div className="mt-1 inline-flex items-center gap-1 text-xs text-slate-500">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>

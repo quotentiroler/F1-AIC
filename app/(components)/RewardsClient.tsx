@@ -34,9 +34,9 @@ function formatDue(iso?: string) {
 type Rarity = "Common" | "Rare" | "Epic" | "Legendary" | "Mythic";
 function tierRarity(points: number): Rarity {
   if (points >= 1_000_000_000) return "Mythic";
-  if (points >= 1_000) return "Legendary";
-  if (points >= 220) return "Epic";
-  if (points >= 120) return "Rare";
+  if (points >= 1_000_000) return "Legendary";
+  if (points >= 100_000) return "Epic";
+  if (points >= 10_000) return "Rare";
   return "Common";
 }
 

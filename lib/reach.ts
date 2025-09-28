@@ -3,13 +3,7 @@ import { listProfiles } from "./social";
 export type ReachRow = {
   name: string;
   referrer?: string;
-  reach: number; // aggregated cross-channel reach
-  breakdown: {
-    linkedin: number;
-    twitter: number;
-    youtube: number;
-    newsletter: number;
-  };
+  reach: number;
 };
 
 // Simple aggregation with weights; tweakable
@@ -36,7 +30,6 @@ export function computeReach(): ReachRow[] {
       name: p.name,
       referrer: p.referrer,
       reach: Math.round(reach),
-      breakdown: { linkedin, twitter, youtube, newsletter },
     };
   });
   return rows.sort((a, b) => b.reach - a.reach);

@@ -67,6 +67,7 @@ export default function LeaderboardPage() {
                 <th className="py-2">#</th>
                 <th className="py-2">Name</th>
                 <th className="py-2">Referred by</th>
+                <th className="py-2">Joined Date</th>
                 <th className="py-2">Reach Diff (%)</th>
                 <th className="py-2 inline-flex items-center gap-1">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
@@ -75,7 +76,6 @@ export default function LeaderboardPage() {
                   </svg>
                   Reach
                 </th>
-                <th className="py-2">Breakdown</th>
               </tr>
             </thead>
             <tbody>
@@ -84,16 +84,15 @@ export default function LeaderboardPage() {
                 const base = p?.baselineFollowers ?? 0;
                 const curr = p?.currentFollowers ?? 0;
                 const diffPct = base > 0 ? Math.round(((curr - base) / base) * 100) : 0;
+                const joinedDate = p?.joinedAt ? new Date(p.joinedAt).toLocaleDateString() : "—";
                 return (
                 <tr key={i} className="border-t border-slate-200">
                   <td className="py-2">{i + 1}</td>
                   <td className="py-2">{r.name}</td>
                   <td className="py-2 text-slate-600">{r.referrer ?? "—"}</td>
+                  <td className="py-2 text-slate-600">{joinedDate}</td>
                   <td className="py-2 text-slate-600">{diffPct}%</td>
                   <td className="py-2 font-semibold">{r.reach.toLocaleString()}</td>
-                  <td className="py-2 text-slate-600">
-                    LI {r.breakdown.linkedin.toLocaleString()} · X {r.breakdown.twitter.toLocaleString()} · YT {r.breakdown.youtube.toLocaleString()} · NL {r.breakdown.newsletter.toLocaleString()}
-                  </td>
                 </tr>
                 );
               })}

@@ -7,6 +7,14 @@ export type Quest = {
   event?: string; // e.g., "F1 Hackathon"
   deadline?: string; // ISO date string
   autoAccept?: boolean; // main quests are auto-accepted
+  /**
+   * Quest classification to support event join auto-accept rules
+   * - main: core quest for the overall program (auto-accepted)
+   * - side: optional non-event quest
+   * - event: quest tied to an event (auto-accept when joining the event)
+   * - event-side: optional event quest (do NOT auto-accept when joining)
+   */
+  kind?: "main" | "side" | "event" | "event-side";
 };
 
 type QuestProgress = Record<string, boolean>;
@@ -20,6 +28,7 @@ export const QUESTS: Quest[] = [
     points: 20,
     event: "F1 Hackathon",
     deadline: "2025-10-05T23:59:59Z",
+    kind: "event",
   },
   {
     id: "judge-links",
@@ -29,6 +38,7 @@ export const QUESTS: Quest[] = [
     points: 15,
     event: "F1 Hackathon",
     deadline: "2025-10-05T23:59:59Z",
+    kind: "event",
   },
   {
     id: "open-rooms-1",
@@ -38,6 +48,7 @@ export const QUESTS: Quest[] = [
     points: 25,
     event: "F1 Hackathon",
     deadline: "2025-10-05T23:59:59Z",
+    kind: "event",
   },
   {
     id: "open-rooms-2",
@@ -47,6 +58,7 @@ export const QUESTS: Quest[] = [
     points: 25,
     event: "F1 Hackathon",
     deadline: "2025-10-05T23:59:59Z",
+    kind: "event-side",
   },
   {
     id: "submission-form",
@@ -57,6 +69,7 @@ export const QUESTS: Quest[] = [
     event: "F1 Hackathon",
     deadline: "2025-10-06T23:59:59Z",
     autoAccept: true,
+    kind: "main",
   },
   {
     id: "teams-room",
@@ -66,6 +79,7 @@ export const QUESTS: Quest[] = [
     points: 20,
     event: "F1 Hackathon",
     deadline: "2025-10-06T23:59:59Z",
+    kind: "event",
   },
 ];
 

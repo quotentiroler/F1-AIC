@@ -97,6 +97,13 @@ export default function DashboardClient() {
 
   return (
     <div className="flex flex-col gap-6">
+      {!user && (
+        <section className="card">
+          <h2 className="text-lg font-semibold">You’re not signed in</h2>
+          <p className="mt-1 text-slate-600 text-sm">Please sign in to view your dashboard.</p>
+          <a href="/api/auth/login" className="btn mt-3 inline-block">Sign in</a>
+        </section>
+      )}
       {ref && (
         <div className="rounded-md border border-primary/30 bg-sky-50 p-3 text-sm text-slate-700">
           <div>
@@ -136,6 +143,7 @@ export default function DashboardClient() {
         </div>
       )}
 
+      {user && (
       <section className="card">
         <h2 className="text-lg font-semibold inline-flex items-center gap-2">
           <Image src="/users-alt-svgrepo-com.svg" alt="" aria-hidden width={18} height={18} className="inline-block" />
@@ -159,8 +167,10 @@ export default function DashboardClient() {
             Copy
           </button>
         </div>
-      </section>
+  </section>
+  )}
 
+      {user && (
       <section className="card">
         <h2 className="text-lg font-semibold inline-flex items-center gap-2">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
@@ -193,10 +203,14 @@ export default function DashboardClient() {
             <div className="mt-1 text-xs text-slate-500">Next at {BADGES.find(b=>b.threshold>badge.threshold)?.threshold ?? "—"} pts</div>
           </div>
         </div>
-      </section>
+  </section>
+  )}
 
-  <ReachCard displayName={(user?.name as string) || (user?.nickname as string) || username || "You"} />
+      {user && (
+        <ReachCard displayName={(user?.name as string) || (user?.nickname as string) || username || "You"} />
+      )}
 
+      {user && (
       <section className="card">
         <h2 className="text-lg font-semibold inline-flex items-center gap-2">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
@@ -238,10 +252,12 @@ export default function DashboardClient() {
             </ul>
           </div>
         )}
-      </section>
+  </section>
+  )}
 
       
 
+      {user && (
       <section className="card">
         <h2 className="text-lg font-semibold inline-flex items-center gap-2">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
@@ -260,6 +276,7 @@ export default function DashboardClient() {
           <li>Share your referral link to spread the word.</li>
         </ul>
       </section>
+      )}
     </div>
   );
 }
