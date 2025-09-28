@@ -4,6 +4,12 @@
 
 Built for the **F1 Hackathon** as an MVP demonstrating how gamification can accelerate community growth and founder success.
 
+## 🌐 Live Demo
+
+**Experience AIC Quest**: [https://f1-aic.vercel.app/](https://f1-aic.vercel.app/)
+
+Try the live platform to explore the gamification mechanics, complete quests, track your growth, and compete on the leaderboards. The demo includes full authentication, quest progression, and social reach tracking functionality.
+
 ## 🎯 What is AIC Quest?
 
 AIC Quest is a growth-oriented gamification platform designed to create a **dual-sided growth flywheel**:
