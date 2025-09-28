@@ -10,6 +10,7 @@ import { getReferrals, totalGrowth, impactPoints, achievedGrowthBadges, GROWTH_A
 import ReachCard from "./ReachCard";
 import { useAppStore } from "@/components/useAppStore";
 import { useUser } from "@auth0/nextjs-auth0";
+import Link from "next/link";
 
 export default function DashboardClient() {
   const params = useSearchParams();
@@ -101,7 +102,7 @@ export default function DashboardClient() {
         <section className="card">
           <h2 className="text-lg font-semibold">You’re not signed in</h2>
           <p className="mt-1 text-slate-600 text-sm">Please sign in to view your dashboard.</p>
-          <a href="/api/auth/login" className="btn mt-3 inline-block">Sign in</a>
+          <Link href="/api/auth/login" className="btn mt-3 inline-block">Sign in</Link>
         </section>
       )}
       {ref && (
