@@ -1,18 +1,23 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { BADGES, calcTotalPoints, readProgress, summarizeBadge } from "@/lib/quests";
 import { readString, writeString } from "@/lib/storage";
 import { ensureSeedProfiles } from "@/lib/social";
 import { getReferrals, totalGrowth, impactPoints, achievedGrowthBadges, GROWTH_ACHIEVEMENTS } from "@/lib/referrals";
 import ReachCard from "./ReachCard";
+import { useAppStore } from "@/components/useAppStore";
+import { useUser } from "@auth0/nextjs-auth0";
 
 export default function DashboardClient() {
   const params = useSearchParams();
   const ref = params.get("ref");
 
-  const [name, setName] = useState("");
+  const username = useAppStore((s) => s.username);
+  const setUsername = useAppStore((s) => s.setUsername);
+  const { user } = useUser();
   const [points, setPoints] = useState(0);
   const [growth, setGrowth] = useState(0);
   const [impact, setImpact] = useState(0);
@@ -24,9 +29,8 @@ export default function DashboardClient() {
 
   useEffect(() => {
     ensureSeedProfiles();
-    const n = readString("username", "");
-    setName(n);
-    setPoints(calcTotalPoints(readProgress()));
+  // Initialize points from local quests progress (legacy); will migrate to Zustand in Quests page
+  setPoints(calcTotalPoints(readProgress()));
     setReferrals(getReferrals());
     const g = totalGrowth();
     setGrowth(g);
@@ -35,22 +39,29 @@ export default function DashboardClient() {
   }, []);
 
   const badge = useMemo(() => summarizeBadge(points), [points]);
+  const refId = useMemo(() => {
+    // Prefer Auth0 profile; fall back to stored username
+    const base = (user?.nickname || user?.name || user?.email?.split("@")[0] || user?.sub || username || "").toString();
+    const token = base.trim().toLowerCase().replace(/[^a-z0-9_-]/g, "-").replace(/-+/g, "-").slice(0, 32);
+    return token || user?.sub?.split("|").pop() || username || "you";
+  }, [user, username]);
+
   const referralUrl = useMemo(() => {
     const origin = typeof window !== "undefined" ? window.location.origin : "";
-    return name ? `${origin}/?ref=${encodeURIComponent(name)}` : "";
-  }, [name]);
+    return refId ? `${origin}/?ref=${encodeURIComponent(refId)}` : "";
+  }, [refId]);
 
-  const saveName = () => writeString("username", name.trim());
+  const saveName = () => writeString("username", username.trim());
 
   async function registerReferral(profileUrl: string) {
     try {
       const res = await fetch("/api/referrals", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ profileUrl, referrer: (ref || name || "You").toString().trim() }),
+        body: JSON.stringify({ profileUrl, referrer: (ref || refId || "You").toString().trim() }),
       });
-      if (!res.ok) throw new Error("Failed to register referral");
-      await refreshReferrals(name);
+  if (!res.ok) throw new Error("Failed to register referral");
+      await refreshReferrals(refId);
     } catch (e) {
       // fallback to local-only if server not configured
       console.warn("Referral API unavailable, staying local", e);
@@ -59,7 +70,7 @@ export default function DashboardClient() {
 
   async function refreshReferrals(referrerOverride?: string) {
     try {
-      const refName = (referrerOverride ?? name ?? "You").toString().trim();
+      const refName = (referrerOverride ?? refId ?? "You").toString().trim();
       const referrer = encodeURIComponent(refName);
       const res = await fetch(`/api/referrals?referrer=${referrer}`, { cache: "no-store" });
       if (!res.ok) return;
@@ -126,13 +137,16 @@ export default function DashboardClient() {
       )}
 
       <section className="card">
-        <h2 className="text-lg font-semibold">Invite friends</h2>
-        <p className="mt-1 text-sm text-slate-600">Share your unique link. Visitors will see a referral banner.</p>
+        <h2 className="text-lg font-semibold inline-flex items-center gap-2">
+          <Image src="/users-alt-svgrepo-com.svg" alt="" aria-hidden width={18} height={18} className="inline-block" />
+          Invite friends
+        </h2>
+        <p className="mt-1 text-sm text-slate-600">Share your unique link (based on your profile). Visitors will see a referral banner.</p>
         <div className="mt-3 flex items-center gap-2">
           <input
             readOnly
             value={referralUrl}
-            placeholder="Set your name to generate a link"
+            placeholder="Generating link…"
             className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm"
           />
           <button
@@ -148,14 +162,20 @@ export default function DashboardClient() {
       </section>
 
       <section className="card">
-        <h2 className="text-lg font-semibold">Your Profile</h2>
+        <h2 className="text-lg font-semibold inline-flex items-center gap-2">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+            <path d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5Z"/>
+            <path d="M2 22c0-4.418 4.477-8 10-8s10 3.582 10 8"/>
+          </svg>
+          Your Profile
+        </h2>
         <div className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-3">
           <div>
             <label className="text-sm text-slate-600">Display name</label>
             <div className="mt-1 flex gap-2">
               <input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 placeholder="e.g. Max"
                 className="w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm"
               />
@@ -175,10 +195,18 @@ export default function DashboardClient() {
         </div>
       </section>
 
-      <ReachCard displayName={name || "You"} />
+  <ReachCard displayName={(user?.name as string) || (user?.nickname as string) || username || "You"} />
 
       <section className="card">
-        <h2 className="text-lg font-semibold">Referral Impact</h2>
+        <h2 className="text-lg font-semibold inline-flex items-center gap-2">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+            <path d="M3 3v6h6"/>
+            <path d="M21 21v-6h-6"/>
+            <path d="M3 9l7-7"/>
+            <path d="M21 15l-7 7"/>
+          </svg>
+          Referral Impact
+        </h2>
         <p className="mt-1 text-sm text-slate-600">Cumulative LinkedIn followers gained by people you brought in.</p>
         <div className="mt-2 flex items-baseline gap-4">
           <div>
@@ -215,7 +243,17 @@ export default function DashboardClient() {
       
 
       <section className="card">
-        <h2 className="text-lg font-semibold">How it works</h2>
+        <h2 className="text-lg font-semibold inline-flex items-center gap-2">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+            <path d="M8 6h13"/>
+            <path d="M8 12h13"/>
+            <path d="M8 18h13"/>
+            <path d="M3 6h.01"/>
+            <path d="M3 12h.01"/>
+            <path d="M3 18h.01"/>
+          </svg>
+          How it works
+        </h2>
         <ul className="mt-2 list-disc pl-5 text-sm text-slate-700">
           <li>Complete quests to earn points.</li>
           <li>Climb the leaderboard and unlock badges.</li>

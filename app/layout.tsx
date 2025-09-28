@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import MainFrame from "@/components/MainFrame";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import AuthProvider from "@/components/AuthProvider";
 
 export const metadata: Metadata = {
   title: "AIC Quest – Growth via Gamification",
@@ -30,11 +31,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        <Header />
-        <MainFrame>{children}</MainFrame>
-        <Footer />
-        <SpeedInsights />
+      <body className="min-h-screen flex flex-col">
+        <AuthProvider>
+          <Header />
+          <MainFrame>{children}</MainFrame>
+          <Footer />
+          <SpeedInsights />
+        </AuthProvider>
       </body>
     </html>
   );

@@ -9,7 +9,7 @@ export default function MainFrame({ children }: { children: React.ReactNode }) {
     return <main className="py-0">{children}</main>;
   }
   return (
-    <main>
+    <main className="flex-1">
       <div className="container py-6">{children}</div>
     </main>
   );

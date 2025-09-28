@@ -4,6 +4,9 @@ export type Quest = {
   description: string;
   points: number;
   link: string;
+  event?: string; // e.g., "F1 Hackathon"
+  deadline?: string; // ISO date string
+  autoAccept?: boolean; // main quests are auto-accepted
 };
 
 type QuestProgress = Record<string, boolean>;
@@ -15,6 +18,8 @@ export const QUESTS: Quest[] = [
     description: "Open the Virtual Theater and explore the kickoff content.",
     link: "https://ro.am/r/#/d/24L7rtuBSr6nL88R3C85ow/GrGEU_byoG4v7FnSvdj9DQ",
     points: 20,
+    event: "F1 Hackathon",
+    deadline: "2025-10-05T23:59:59Z",
   },
   {
     id: "judge-links",
@@ -22,6 +27,8 @@ export const QUESTS: Quest[] = [
     description: "Open judge links and learn about evaluation focus.",
     link: "https://ro.am/r/#/d/PtcPAL-cREC_AYtQE0avdg/2np4YwjOwVlIPIH0_T6SPQ",
     points: 15,
+    event: "F1 Hackathon",
+    deadline: "2025-10-05T23:59:59Z",
   },
   {
     id: "open-rooms-1",
@@ -29,6 +36,8 @@ export const QUESTS: Quest[] = [
     description: "Hop into an open ROAM room to connect with builders.",
     link: "https://ro.am/r/#/d/LM7sKJ_ySxKmUu2Nk4xnTQ/hF4ycbCPVPcpIGsct7VApA",
     points: 25,
+    event: "F1 Hackathon",
+    deadline: "2025-10-05T23:59:59Z",
   },
   {
     id: "open-rooms-2",
@@ -36,6 +45,8 @@ export const QUESTS: Quest[] = [
     description: "Find teams and ideas in a different ROAM room.",
     link: "https://ro.am/r/#/d/j-kdhSrhT5a4mAMXNVggRQ/4MGwXdgJcoTQT3ikoLMPiA",
     points: 25,
+    event: "F1 Hackathon",
+    deadline: "2025-10-05T23:59:59Z",
   },
   {
     id: "submission-form",
@@ -43,6 +54,9 @@ export const QUESTS: Quest[] = [
     description: "Review the submission form requirements.",
     link: "https://docs.google.com/forms/d/e/1FAIpQLSc-eDTMvfz1dh7PFm7pBshSAupaBK3PPixzKEbfqa0PN2P0Lg/viewform?usp=dialog",
     points: 15,
+    event: "F1 Hackathon",
+    deadline: "2025-10-06T23:59:59Z",
+    autoAccept: true,
   },
   {
     id: "teams-room",
@@ -50,8 +64,44 @@ export const QUESTS: Quest[] = [
     description: "Get inspired by an existing team space.",
     link: "https://ro.am/r/#/d/5CA9IbYAToqzErmRvCNTpw/l0bK5TQGEEmtmAMAvEnCxQ",
     points: 20,
+    event: "F1 Hackathon",
+    deadline: "2025-10-06T23:59:59Z",
   },
 ];
+
+export type QuestGroup = { event: string; deadline?: string; items: Quest[] };
+
+export function groupQuestsByEvent(qs: Quest[] = QUESTS): QuestGroup[] {
+  const map = new Map<string, Quest[]>();
+  for (const q of qs) {
+    const k = q.event || "General";
+    if (!map.has(k)) map.set(k, []);
+    map.get(k)!.push(q);
+  }
+  const groups: QuestGroup[] = Array.from(map.entries()).map(([event, items]) => {
+    const latestDeadline = items
+      .map((i) => (i.deadline ? new Date(i.deadline).getTime() : 0))
+      .reduce((a, b) => Math.max(a, b), 0);
+    return { event, deadline: latestDeadline ? new Date(latestDeadline).toISOString() : undefined, items };
+  });
+  // Sort groups by deadline descending (most urgent/late first), fallback to event name
+  groups.sort((a, b) => {
+    const da = a.deadline ? new Date(a.deadline).getTime() : 0;
+    const db = b.deadline ? new Date(b.deadline).getTime() : 0;
+    if (db !== da) return db - da;
+    return a.event.localeCompare(b.event);
+  });
+  // Sort items inside group by deadline descending too
+  for (const g of groups) {
+    g.items.sort((a, b) => {
+      const da = a.deadline ? new Date(a.deadline).getTime() : 0;
+      const db = b.deadline ? new Date(b.deadline).getTime() : 0;
+      if (db !== da) return db - da;
+      return a.title.localeCompare(b.title);
+    });
+  }
+  return groups;
+}
 
 export const BADGES = [
   { id: "rookie", label: "Rookie", threshold: 50 },
@@ -69,7 +119,7 @@ export function summarizeBadge(total: number): Badge {
   return current;
 }
 
-// Local storage keys
+// Legacy local storage key (kept to avoid breaking existing users before full migration to Zustand-only)
 const QKEY = "quests:v1";
 
 import { readJSON, writeJSON } from "./storage";
