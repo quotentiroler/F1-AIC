@@ -41,6 +41,7 @@ export default function NavBar() {
           <span className="text-sm text-slate-700">{user.name || user.email}</span>
           <Link
             href="/api/auth/logout"
+            prefetch={false}
             className="rounded-md px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100"
           >
             Sign out

@@ -36,7 +36,7 @@ export default async function ProfilePage() {
           <div className="mt-1 break-all font-mono text-xs">{user.sub}</div>
         </div>
       </div>
-      <Link href="/api/auth/logout" className="btn mt-6 inline-block">Sign out</Link>
+  <Link href="/api/auth/logout" prefetch={false} className="btn mt-6 inline-block">Sign out</Link>
     </div>
   );
 }
