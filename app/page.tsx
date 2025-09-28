@@ -25,6 +25,7 @@ export default function LandingPage() {
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Link
             href="/dashboard"
+            prefetch={false}
             className="rounded-lg bg-white px-5 py-3 font-semibold text-slate-900 shadow hover:shadow-md"
           >
             Go to Dashboard
@@ -53,6 +54,7 @@ export default function LandingPage() {
           <div className="mt-8">
             <Link
               href="/dashboard"
+              prefetch={false}
               className="rounded-lg bg-white px-5 py-3 font-semibold text-slate-900 shadow hover:shadow-md"
             >
               Join the AI Collective

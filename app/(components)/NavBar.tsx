@@ -13,9 +13,36 @@ const tabs: { href: Route; label: string }[] = [
   { href: "/profile", label: "Profile" },
 ];
 
+function AuthControls() {
+  const { user, isLoading } = useUser();
+  if (isLoading) {
+    return <span className="text-sm text-slate-500">Loading…</span>;
+  }
+  return user ? (
+    <>
+      <span className="text-sm text-slate-700">{user.name || user.email}</span>
+      <Link
+        href="/api/auth/logout"
+        prefetch={false}
+        className="rounded-md px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100"
+      >
+        Sign out
+      </Link>
+    </>
+  ) : (
+    <Link
+      href="/api/auth/login"
+      prefetch={false}
+      className="rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800"
+    >
+      Sign in
+    </Link>
+  );
+}
+
 export default function NavBar() {
   const pathname = usePathname();
-  const { user, isLoading } = useUser();
+  const isHome = pathname === "/";
   return (
     <nav className="flex items-center gap-2">
       {tabs.map((t) => {
@@ -24,6 +51,7 @@ export default function NavBar() {
           <Link
             key={t.href}
             href={t.href}
+            prefetch={t.href === "/dashboard" ? false : undefined}
             className={
               "rounded-md px-3 py-1.5 text-sm font-medium hover:bg-slate-100 " +
               (active ? "bg-slate-100 text-slate-900" : "text-slate-600")
@@ -34,27 +62,7 @@ export default function NavBar() {
         );
       })}
       <span className="mx-2 h-5 w-px bg-slate-200" />
-      {isLoading ? (
-        <span className="text-sm text-slate-500">Loading…</span>
-      ) : user ? (
-        <>
-          <span className="text-sm text-slate-700">{user.name || user.email}</span>
-          <Link
-            href="/api/auth/logout"
-            prefetch={false}
-            className="rounded-md px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100"
-          >
-            Sign out
-          </Link>
-        </>
-      ) : (
-        <Link
-          href="/api/auth/login"
-          className="rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800"
-        >
-          Sign in
-        </Link>
-      )}
+      {!isHome && <AuthControls />}
     </nav>
   );
 }
