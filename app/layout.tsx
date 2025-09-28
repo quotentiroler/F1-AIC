@@ -39,7 +39,9 @@ export default function RootLayout({
             <NavBar />
           </div>
         </header>
-        <main className="container py-6">{children}</main>
+        <main className="py-6">
+          <div className="container">{children}</div>
+        </main>
         <footer className="container py-8 text-center text-sm text-slate-500">
           Built for F1 Hackathon • Deployed on Vercel
         </footer>
