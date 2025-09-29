@@ -1,5 +1,7 @@
 # AIC Quest - Gamified Growth Platform
 
+🏆 **3rd Place Winner** at the [F1 Hackathon: Building the AIC Dream Team](https://luma.com/n4iyk06z)
+
 **Tagline**: *"Growers vs Showers"* - A gamified engagement platform that drives growth for both the AI Collective community and participating founders/startups through quest completion, referral mechanics, and competitive leaderboards.
 
 Built for the **F1 Hackathon** as an MVP demonstrating how gamification can accelerate community growth and founder success.
